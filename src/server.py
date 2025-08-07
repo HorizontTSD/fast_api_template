@@ -1,34 +1,32 @@
 # src/server.py
-
-from typing import Annotated, List
+import logging
+from typing import Annotated
 
 # import pandas as pd
 import uvicorn
-from fastapi import FastAPI, HTTPException, Body
+from fastapi import Body, Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.config import logger, public_or_local
+from src.core.configuration.config import settings
+from src.core.token import verify_token
 from src.models.schemes import HellowRequest
 from src.utils.greeting import hellow_names
 
-if public_or_local == 'LOCAL':
-    url = 'http://localhost'
-else:
-    url = 'http://11.11.11.11'
+logger = logging.getLogger(__name__)
 
-origins = [
-    url
-]
+app = FastAPI(
+    docs_url="/template_fast_api/v1/",
+    openapi_url='/template_fast_api/v1/openapi.json',
+    dependencies=[Depends(verify_token)] if settings.VERIFY_TOKEN else []
+    )
 
-app = FastAPI(docs_url="/template_fast_api/v1/", openapi_url='/template_fast_api/v1/openapi.json')
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=settings.get_origins_urls(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 
 @app.post("/template_fast_api/v1/greetings")
@@ -62,5 +60,14 @@ def read_root():
 
 
 if __name__ == "__main__":
-    port = 7070
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    try:
+        logger.info(f"Starting server on http://{settings.HOST}:{settings.PORT}")
+        uvicorn.run(
+            "server:app",
+            host=settings.HOST,
+            port=settings.PORT,
+            workers=4,
+            log_level="debug",
+        )
+    except Exception as e:
+        logger.error(f"Failed to start server: {e}")
