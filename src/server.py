@@ -7,7 +7,7 @@ from fastapi import Body, Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.core.configuration.config import settings
-from src.core.token import verify_token
+from src.core.token import token_validator
 from src.models.schemes import HellowRequest
 from src.utils.greeting import hellow_names
 
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI(
     docs_url="/template_fast_api/v1/",
     openapi_url='/template_fast_api/v1/openapi.json',
-    dependencies=[Depends(verify_token)] if settings.VERIFY_TOKEN else []
+    dependencies=[Depends(token_validator)] if settings.VERIFY_TOKEN else []
     )
 
 app.add_middleware(
