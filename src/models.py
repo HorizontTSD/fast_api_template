@@ -1,4 +1,4 @@
-from typing import Optional
+# src/models.py
 
 from pydantic import BaseModel
 
