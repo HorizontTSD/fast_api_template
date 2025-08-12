@@ -1,8 +1,11 @@
 # src/api/v1/greeting.py
-from fastapi import APIRouter, HTTPException, Body
-from typing import Annotated, List
+from typing import Annotated
+
+from fastapi import APIRouter, Body, HTTPException
+
 from src.models import HellowRequest
-from src.services.greeting_service import greet_users # Импортируем из сервисного слоя
+from src.services.greeting_service import greet_users  # Импортируем из сервисного слоя
+
 # from src.core.logger import logger
 
 router = APIRouter()

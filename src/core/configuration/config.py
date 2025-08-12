@@ -1,6 +1,5 @@
 # src/core/config.py
 import logging
-import os
 
 from environs import Env
 
