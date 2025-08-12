@@ -1,16 +1,14 @@
 # src/server.py
 import logging
-from typing import Annotated
 
 # import pandas as pd
 import uvicorn
-from fastapi import Body, Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.api import api_router
 from src.core.configuration.config import settings
 from src.core.token import token_validator
-from src.models.schemes import HellowRequest
-from src.utils.greeting import hellow_names
 
 logger = logging.getLogger(__name__)
 
@@ -28,31 +26,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-@app.post("/template_fast_api/v1/greetings")
-async def inputation(body: Annotated[
-    HellowRequest, Body(
-        example={"names": ['Sasha', 'Nikita', 'Kristina']})]):
-    try:
-        names = body.names
-        if names:
-            res = hellow_names(names)
-            return res
-        else:
-            logger.error("Something happened during creation of the search table")
-            raise HTTPException(
-                status_code=400,
-                detail="Bad Request",
-                headers={"X-Error": "Something happened during creation of the search table"},
-            )
-    except Exception as ApplicationError:
-        logger.error(ApplicationError.__repr__())
-        raise HTTPException(
-            status_code=400,
-            detail="Unknown Error",
-            headers={"X-Error": f"{ApplicationError.__repr__()}"},
-        )
-
+app.include_router(
+    api_router, prefix='/api'
+)
 
 @app.get("/")
 def read_root():
