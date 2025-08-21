@@ -20,7 +20,7 @@ dependencies = [
     "environs>=14.3.0",
     "ruff>=0.12.7",
 ]
-requires-python = ">=3.9"
+requires-python = "==3.12.*"
 readme = "README.md"
 license = {text = "MIT"}
 
@@ -50,6 +50,7 @@ markers = [
     "unit_transform",
 ]
 pythonpath = [
+    "src",
     ".",
 ]
 
